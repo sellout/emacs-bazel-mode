@@ -26,34 +26,44 @@
 
 (require 'bazel-util)
 
+(defgroup bazel-build nil
+  "Tooling for building Bazel projects."
+  :link '(url-link "https://github.com/bazelbuild/emacs-bazel-mode")
+  :group 'bazel)
+
+(defcustom bazel-command "bazel"
+  "Filename of bazel executable."
+  :type 'string
+  :group 'bazel-build)
+
 (defun bazel-build (target)
   "Build a Bazel TARGET."
-  (interactive (list (bazel-build--read-target "bazel build ")))
+  (interactive (list (bazel-build--read-target (concat bazel-command " build "))))
   (bazel-build--run-bazel-command "build" target))
 
 (defun bazel-run (target)
   "Build and run a Bazel TARGET."
-  (interactive (list (bazel-build--read-target "bazel run ")))
+  (interactive (list (bazel-build--read-target (concat bazel-command " run "))))
   (bazel-build--run-bazel-command "run" target))
 
 (defun bazel-test (target)
   "Build and run a Bazel test TARGET."
-  (interactive (list (bazel-build--read-target "bazel test ")))
+  (interactive (list (bazel-build--read-target (concat bazel-command " test "))))
   (bazel-build--run-bazel-command "test" target))
 
 (defun bazel-build--run-bazel-command (command target)
   "Run Bazel tool with given COMMAND, e.g. build or run, on the given TARGET."
   (compile
-   (mapconcat #'shell-quote-argument (list "bazel" command target) " ")))
+   (mapconcat #'shell-quote-argument (list bazel-command command target) " ")))
 
 (defun bazel-build--read-target (prompt)
   "Read a Bazel build target from the minibuffer.  PROMPT is a read-only prompt."
-  (let* ((file-name (buffer-file-name))
+  (let* ((file-name (or (buffer-file-name) default-directory))
          (workspace-root
-          (or (bazel-util-workspace-root file-name)
+          (or (bazel-workspace-root file-name)
               (user-error "Not in a Bazel workspace.  No WORKSPACE file found")))
          (package-name
-          (or (bazel-util-package-name file-name workspace-root)
+          (or (bazel-package-name file-name workspace-root)
               (user-error "Not in a Bazel package.  No BUILD file found")))
          (initial-input (concat "//" package-name)))
     (read-string prompt initial-input)))

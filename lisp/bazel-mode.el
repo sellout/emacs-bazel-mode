@@ -34,7 +34,7 @@
 (defgroup bazel-mode nil
   "Major mode for Bazel BUILD files."
   :link '(url-link "https://github.com/bazelbuild/emacs-bazel-mode")
-  :group 'languages)
+  :group 'bazel)
 
 (defcustom bazel-mode-buildifier-command "buildifier"
   "Filename of buildifier executable."

@@ -22,7 +22,12 @@
 
 (require 'cl-lib)
 
-(defun bazel-util-workspace-root (file-name)
+(defgroup bazel nil
+  "Bazel build system"
+  :link '(url-link "https://github.com/bazelbuild/emacs-bazel-mode")
+  :group 'languages)
+
+(defun bazel-workspace-root (file-name)
   "Find the root of the Bazel workspace containing FILE-NAME.
 If FILE-NAME is not in a Bazel workspace, return nil.  Otherwise,
 the return value is a directory name."
@@ -30,7 +35,7 @@ the return value is a directory name."
   (let ((result (locate-dominating-file file-name "WORKSPACE")))
     (and result (file-name-as-directory result))))
 
-(defun bazel-util-package-name (file-name workspace-root)
+(defun bazel-package-name (file-name workspace-root)
   "Return the nearest Bazel package for FILE-NAME under WORKSPACE-ROOT.
 If FILE-NAME is not in a Bazel package, return nil."
   (cl-check-type file-name string)
